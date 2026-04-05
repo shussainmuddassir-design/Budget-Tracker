@@ -214,24 +214,42 @@
             padding: 20px;
             border-radius: 20px;
             margin-bottom: 16px;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
-
-        .overview-controls label {
-            display: inline-block;
-            margin-right: 8px;
+        
+        .month-selector-wrapper,
+        .category-selector-wrapper {
+            margin-bottom: 15px;
+        }
+        
+        .month-selector-wrapper:last-child,
+        .category-selector-wrapper:last-child {
             margin-bottom: 0;
+        }
+        
+        .overview-controls label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 500;
             font-size: 0.85rem;
         }
-
-        .overview-controls select, .overview-controls input {
-            width: auto;
-            min-width: 150px;
-            font-size: 0.9rem;
+        
+        .overview-controls select, 
+        .overview-controls input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+        
+        .overview-controls select:focus,
+        .overview-controls input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .chart-container {
@@ -372,15 +390,6 @@
                 font-size: 0.85rem;
             }
             
-            .overview-controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .overview-controls select, .overview-controls input {
-                width: 100%;
-            }
-            
             .category-budget-item {
                 flex-direction: column;
                 align-items: stretch;
@@ -403,24 +412,27 @@
         <!-- Current Date -->
         <div class="current-date" id="currentDate"></div>
 
-        <!-- Summary Cards - Always in a row -->
-        <div class="summary">
-            <div class="card budget-card" id="budgetCard">
-                <h3>Monthly Budget</h3>
-                <div class="amount" id="displayBudget">$0.00</div>
-            </div>
-            <div class="card expense-card">
-                <h3>Expenses</h3>
-                <div class="amount" id="displayExpense">$0.00</div>
-            </div>
-            <div class="card balance-card">
-                <h3>Balance</h3>
-                <div class="amount" id="displayBalance">$0.00</div>
-            </div>
-        </div>
+        <!-- Summary Cards - Only on Home tab, but visible on both? Actually moving inside home tab -->
+        
 
         <!-- Home Tab Content -->
         <div id="home" class="tab-content active">
+            <!-- Summary Cards inside Home tab only -->
+            <div class="summary">
+                <div class="card budget-card" id="budgetCard">
+                    <h3>Monthly Budget</h3>
+                    <div class="amount" id="displayBudget">$0.00</div>
+                </div>
+                <div class="card expense-card">
+                    <h3>Expenses</h3>
+                    <div class="amount" id="displayExpense">$0.00</div>
+                </div>
+                <div class="card balance-card">
+                    <h3>Balance</h3>
+                    <div class="amount" id="displayBalance">$0.00</div>
+                </div>
+            </div>
+
             <div class="form-container">
                 <h2>Add Transaction</h2>
                 <form id="transactionForm">
@@ -454,11 +466,11 @@
         <!-- Overview Tab Content -->
         <div id="overview" class="tab-content">
             <div class="overview-controls">
-                <div>
+                <div class="month-selector-wrapper">
                     <label for="monthSelect">Select Month:</label>
                     <input type="month" id="monthSelect">
                 </div>
-                <div>
+                <div class="category-selector-wrapper">
                     <label for="categorySelect">Select Category:</label>
                     <select id="categorySelect"></select>
                 </div>
