@@ -171,7 +171,7 @@
             border-radius: 50px;
             z-index: 1000;
             width: auto;
-            min-width: 200px;
+            min-width: 280px;
             max-width: 90%;
             justify-content: center;
         }
@@ -310,54 +310,125 @@
             font-size: 0.9rem;
         }
 
-        .category-budget-section {
+        /* Budget Tab */
+        .budget-tab-container {
             background: white;
             padding: 20px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
-        .category-budget-section h3 {
-            margin-bottom: 16px;
-            color: #1f2937;
-            font-size: 1.2rem;
-            font-weight: 600;
+        .category-selector {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e5e7eb;
         }
 
-        .category-budget-item {
+        .category-selector h3 {
+            margin-bottom: 12px;
+            color: #1f2937;
+            font-size: 1.1rem;
+        }
+
+        .category-checkbox {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid #e5e7eb;
             gap: 10px;
+            margin-bottom: 12px;
             flex-wrap: wrap;
         }
 
-        .category-budget-item:last-child {
-            border-bottom: none;
+        .category-checkbox label {
+            margin-bottom: 0;
+            cursor: pointer;
         }
 
-        .category-budget-item span {
-            font-size: 0.9rem;
-        }
-
-        .category-budget-item input {
-            width: 120px;
-            font-size: 0.85rem;
-            padding: 8px;
-        }
-
-        .btn-small {
+        .category-checkbox input[type="checkbox"] {
             width: auto;
-            padding: 6px 16px;
-            background: #10b981;
-            margin-left: 8px;
-            font-size: 0.85rem;
+            margin-right: 5px;
         }
 
-        .btn-small:hover {
+        .category-budget-input {
+            margin-left: 25px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+            padding-left: 15px;
+            border-left: 2px solid #667eea;
+        }
+
+        .category-budget-input input {
+            width: 150px;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .subcategory-budget-section {
+            margin-left: 25px;
+            padding-left: 15px;
+            margin-top: 8px;
+            margin-bottom: 15px;
+        }
+
+        .subcategory-budget-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .subcategory-budget-row span {
+            font-size: 0.85rem;
+            color: #6b7280;
+            min-width: 100px;
+        }
+
+        .subcategory-budget-row input {
+            width: 120px;
+            padding: 6px;
+        }
+
+        .toggle-subcategory {
+            background: none;
+            border: none;
+            color: #667eea;
+            font-size: 0.8rem;
+            cursor: pointer;
+            width: auto;
+            padding: 4px 8px;
+            margin-top: 5px;
+        }
+
+        .add-custom-btn {
+            background: #10b981;
+            margin-top: 16px;
+        }
+
+        .add-custom-btn:hover {
             background: #059669;
+        }
+
+        .custom-input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .custom-input-group input {
+            flex: 1;
+        }
+
+        .custom-input-group button {
+            width: auto;
+            padding: 12px 20px;
+        }
+
+        .btn-remove {
+            background: #ef4444;
+            width: auto;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            margin-left: 10px;
         }
 
         /* Mobile specific adjustments */
@@ -383,41 +454,39 @@
                 padding: 6px 12px;
                 gap: 8px;
                 bottom: 12px;
+                min-width: 260px;
             }
             
             .tab-btn {
-                padding: 8px 16px;
-                font-size: 0.85rem;
+                padding: 8px 12px;
+                font-size: 0.8rem;
             }
             
-            .category-budget-item {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .category-budget-item input {
+            .category-budget-input input {
                 width: 100%;
-            }
-            
-            .btn-small {
                 margin-left: 0;
+                margin-top: 5px;
+            }
+            
+            .subcategory-budget-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .subcategory-budget-row input {
                 width: 100%;
-                margin-top: 8px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+        <div class="container">
         <!-- Current Date -->
         <div class="current-date" id="currentDate"></div>
 
-        <!-- Summary Cards - Only on Home tab, but visible on both? Actually moving inside home tab -->
-        
-
         <!-- Home Tab Content -->
         <div id="home" class="tab-content active">
-            <!-- Summary Cards inside Home tab only -->
+            <!-- Summary Cards -->
             <div class="summary">
                 <div class="card budget-card" id="budgetCard">
                     <h3>Monthly Budget</h3>
@@ -443,14 +512,16 @@
                     
                     <div class="form-group">
                         <label for="category">Category *</label>
-                        <input type="text" id="category" list="categoryList" required placeholder="e.g., Food, Rent, Fixed Expenses">
-                        <datalist id="categoryList"></datalist>
+                        <select id="categorySelectHome" required>
+                            <option value="">Select a category</option>
+                        </select>
                     </div>
                     
                     <div class="form-group">
-                        <label for="subcategory">Sub-category (Optional)</label>
-                        <input type="text" id="subcategory" list="subcategoryList" placeholder="e.g., Groceries, Fuel">
-                        <datalist id="subcategoryList"></datalist>
+                        <label for="subcategory">Sub-category</label>
+                        <select id="subcategorySelectHome">
+                            <option value="">Select a sub-category (optional)</option>
+                        </select>
                     </div>
                     
                     <div class="form-group">
@@ -460,6 +531,21 @@
                     
                     <button type="submit">Add Transaction</button>
                 </form>
+            </div>
+        </div>
+
+        <!-- Budget Tab Content -->
+        <div id="budget" class="tab-content">
+            <div class="budget-tab-container">
+                <h2 style="margin-bottom: 20px;">Set Budgets</h2>
+                <div id="budgetSetupContainer"></div>
+                
+                <button id="addCustomCategoryBtn" class="add-custom-btn">+ Add Custom Category</button>
+                <div id="customCategoryInput" style="display: none;" class="custom-input-group">
+                    <input type="text" id="newCategoryName" placeholder="New category name">
+                    <button id="confirmAddCategory">Add</button>
+                    <button id="cancelAddCategory">Cancel</button>
+                </div>
             </div>
         </div>
 
@@ -484,25 +570,36 @@
                 <h3>Sub-category Expenses for <span id="selectedCategoryName"></span></h3>
                 <div id="subcategoryListContainer"></div>
             </div>
-
-            <div class="category-budget-section">
-                <h3>Set Category Budgets</h3>
-                <div id="categoryBudgetsList"></div>
-            </div>
         </div>
     </div>
 
-    <!-- Bottom Tabs - Centered -->
+    <!-- Bottom Tabs -->
     <div class="tabs-bottom">
         <button class="tab-btn active" data-tab="home">Home</button>
+        <button class="tab-btn" data-tab="budget">Budget</button>
         <button class="tab-btn" data-tab="overview">Overview</button>
     </div>
 
     <script>
+                // DEFAULT CATEGORIES AND SUB-CATEGORIES
+        const DEFAULT_CATEGORIES = {
+            "Fixed Expenses": ["Rent", "Business", "Savings", "Balloon Payment", "Parents"],
+            "Car": ["Fuel", "Maintenance", "Insurance", "Installment"],
+            "Food": ["Groceries", "Dine Out / Take Away / Home Delivery", "Snacks"],
+            "Healthcare": ["Pharmacy", "Doctor"],
+            "Bills & Utilities": ["Electricity", "Water", "Internet", "Phone"],
+            "Home": ["Khadija", "Maintenance"],
+            "Transportation": ["Public Transport", "Taxi", "Flight"],
+            "Personal": ["Clothing", "Baby", "Vape", "Electronics"],
+            "Development": ["Books", "Courses", "Entertainment"],
+            "Strategic Expense": []
+        };
+
         // App State
         let transactions = [];
         let monthlyBudget = 0;
-        let categoryBudgets = {};
+        let selectedCategories = {}; // { categoryName: { budget: 0, subcategoryBudgets: { subName: budget } } }
+        let customCategories = {}; // User added categories
         let chart = null;
         
         // Load data from localStorage
@@ -517,23 +614,48 @@
                 monthlyBudget = parseFloat(savedBudget);
             }
             
-            const savedCategoryBudgets = localStorage.getItem('categoryBudgets');
-            if (savedCategoryBudgets) {
-                categoryBudgets = JSON.parse(savedCategoryBudgets);
+            const savedSelectedCategories = localStorage.getItem('selectedCategories');
+            if (savedSelectedCategories) {
+                selectedCategories = JSON.parse(savedSelectedCategories);
+            } else {
+                // Initialize with some default selected categories
+                selectedCategories = {
+                    "Fixed Expenses": { budget: 0, subcategoryBudgets: {} },
+                    "Car": { budget: 0, subcategoryBudgets: {} },
+                    "Food": { budget: 0, subcategoryBudgets: {} }
+                };
+            }
+            
+            const savedCustomCategories = localStorage.getItem('customCategories');
+            if (savedCustomCategories) {
+                customCategories = JSON.parse(savedCustomCategories);
+            } else {
+                customCategories = {};
             }
             
             updateUI();
-            populateDropdowns();
         }
         
         // Save data
         function saveData() {
             localStorage.setItem('budgetTransactions', JSON.stringify(transactions));
             localStorage.setItem('monthlyBudget', monthlyBudget);
-            localStorage.setItem('categoryBudgets', JSON.stringify(categoryBudgets));
+            localStorage.setItem('selectedCategories', JSON.stringify(selectedCategories));
+            localStorage.setItem('customCategories', JSON.stringify(customCategories));
         }
         
-        // Format date
+        // Get all categories (default + custom)
+        function getAllCategories() {
+            const all = { ...DEFAULT_CATEGORIES, ...customCategories };
+            return all;
+        }
+        
+        // Get subcategories for a category
+        function getSubcategories(category) {
+            const all = getAllCategories();
+            return all[category] || [];
+        }
+                // Format date
         function formatDate(dateString) {
             const date = new Date(dateString);
             const day = date.getDate();
@@ -592,10 +714,8 @@
             transactions.push(transaction);
             saveData();
             updateUI();
-            populateDropdowns();
         }
-        
-        // Update Home tab UI
+                // Update Home tab UI
         function updateHomeTab() {
             const currentMonth = getCurrentMonth();
             const totalExpense = getTotalExpensesForMonth(currentMonth);
@@ -606,43 +726,198 @@
             document.getElementById('displayBalance').textContent = `$${balance.toFixed(2)}`;
         }
         
-        // Populate category and subcategory dropdowns from existing data
-        function populateDropdowns() {
-            const categories = new Set();
-            const subcategories = new Set();
+        // Populate category dropdown in Home tab
+        function populateHomeDropdowns() {
+            const categories = Object.keys(getAllCategories());
+            const categorySelect = document.getElementById('categorySelectHome');
+            const currentCategory = categorySelect.value;
             
-            transactions.forEach(t => {
-                if (t.category) categories.add(t.category);
-                if (t.subcategory) subcategories.add(t.subcategory);
-            });
-            
-            const categoryList = document.getElementById('categoryList');
-            categoryList.innerHTML = '';
-            Array.from(categories).sort().forEach(cat => {
-                const option = document.createElement('option');
-                option.value = cat;
-                categoryList.appendChild(option);
-            });
-            
-            const subcategoryList = document.getElementById('subcategoryList');
-            subcategoryList.innerHTML = '';
-            Array.from(subcategories).sort().forEach(sub => {
-                const option = document.createElement('option');
-                option.value = sub;
-                subcategoryList.appendChild(option);
-            });
-            
-            // Update category select in overview
-            const categorySelect = document.getElementById('categorySelect');
-            const currentValue = categorySelect.value;
             categorySelect.innerHTML = '<option value="">Select a category</option>';
-            Array.from(categories).sort().forEach(cat => {
+            categories.sort().forEach(cat => {
                 const option = document.createElement('option');
                 option.value = cat;
                 option.textContent = cat;
                 categorySelect.appendChild(option);
             });
-            if (currentValue && Array.from(categories).includes(currentValue)) {
+            
+            if (currentCategory && categories.includes(currentCategory)) {
+                categorySelect.value = currentCategory;
+                updateSubcategoryDropdown(currentCategory);
+            } else {
+                document.getElementById('subcategorySelectHome').innerHTML = '<option value="">Select a sub-category (optional)</option>';
+            }
+        }
+        
+        // Update subcategory dropdown based on selected category
+        function updateSubcategoryDropdown(category) {
+            const subcategories = getSubcategories(category);
+            const subSelect = document.getElementById('subcategorySelectHome');
+            subSelect.innerHTML = '<option value="">Select a sub-category (optional)</option>';
+            
+            subcategories.forEach(sub => {
+                const option = document.createElement('option');
+                option.value = sub;
+                option.textContent = sub;
+                subSelect.appendChild(option);
+            });
+        }
+                // Render Budget tab
+        function renderBudgetTab() {
+            const container = document.getElementById('budgetSetupContainer');
+            const allCategories = getAllCategories();
+            const categories = Object.keys(allCategories).sort();
+            
+            container.innerHTML = '';
+            
+            categories.forEach(category => {
+                const isSelected = selectedCategories.hasOwnProperty(category);
+                const categoryBudget = selectedCategories[category]?.budget || 0;
+                const subcategoryBudgets = selectedCategories[category]?.subcategoryBudgets || {};
+                const subcategories = allCategories[category];
+                
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category-selector';
+                categoryDiv.innerHTML = `
+                    <div class="category-checkbox">
+                        <input type="checkbox" id="cat_${category.replace(/\s/g, '_')}" ${isSelected ? 'checked' : ''}>
+                        <label for="cat_${category.replace(/\s/g, '_')}"><strong>${category}</strong></label>
+                        ${category !== 'Fixed Expenses' ? `<button class="btn-remove" onclick="removeCustomCategory('${category.replace(/'/g, "\\'")}')" ${!customCategories[category] ? 'style="display:none"' : ''}>Remove</button>` : ''}
+                    </div>
+                    ${isSelected ? `
+                        <div class="category-budget-input">
+                            <label>Category Budget: $</label>
+                            <input type="number" id="budget_${category.replace(/\s/g, '_')}" value="${categoryBudget}" step="0.01" placeholder="0.00">
+                        </div>
+                        ${subcategories.length > 0 ? `
+                            <button class="toggle-subcategory" onclick="toggleSubcategoryBudget('${category.replace(/'/g, "\\'")}')">
+                                + Set Sub-category Budgets (Optional)
+                            </button>
+                            <div id="subcat_${category.replace(/\s/g, '_')}" style="display: none;" class="subcategory-budget-section">
+                                ${subcategories.map(sub => `
+                                    <div class="subcategory-budget-row">
+                                        <span>${sub}:</span>
+                                        <input type="number" id="subbudget_${category.replace(/\s/g, '_')}_${sub.replace(/\s/g, '_')}" 
+                                               value="${subcategoryBudgets[sub] || 0}" step="0.01" placeholder="Optional budget">
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    ` : ''}
+                `;
+                container.appendChild(categoryDiv);
+            });
+            
+            // Add event listeners for checkboxes
+            categories.forEach(category => {
+                const checkbox = document.getElementById(`cat_${category.replace(/\s/g, '_')}`);
+                if (checkbox) {
+                    checkbox.addEventListener('change', (e) => {
+                        if (e.target.checked) {
+                            if (!selectedCategories[category]) {
+                                selectedCategories[category] = { budget: 0, subcategoryBudgets: {} };
+                            }
+                        } else {
+                            delete selectedCategories[category];
+                        }
+                        saveData();
+                        renderBudgetTab();
+                        updateHomeDropdowns();
+                        updateOverviewCategorySelect();
+                    });
+                }
+                
+                const budgetInput = document.getElementById(`budget_${category.replace(/\s/g, '_')}`);
+                if (budgetInput) {
+                    budgetInput.addEventListener('change', (e) => {
+                        if (selectedCategories[category]) {
+                            selectedCategories[category].budget = parseFloat(e.target.value) || 0;
+                            saveData();
+                        }
+                    });
+                }
+                
+                // Add subcategory budget listeners
+                const subcategories = allCategories[category];
+                if (subcategories) {
+                    subcategories.forEach(sub => {
+                        const subInput = document.getElementById(`subbudget_${category.replace(/\s/g, '_')}_${sub.replace(/\s/g, '_')}`);
+                        if (subInput) {
+                            subInput.addEventListener('change', (e) => {
+                                if (selectedCategories[category]) {
+                                    if (!selectedCategories[category].subcategoryBudgets) {
+                                        selectedCategories[category].subcategoryBudgets = {};
+                                    }
+                                    selectedCategories[category].subcategoryBudgets[sub] = parseFloat(e.target.value) || 0;
+                                    saveData();
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        
+        // Toggle subcategory budget section
+        function toggleSubcategoryBudget(category) {
+            const div = document.getElementById(`subcat_${category.replace(/\s/g, '_')}`);
+            if (div.style.display === 'none') {
+                div.style.display = 'block';
+            } else {
+                div.style.display = 'none';
+            }
+        }
+        
+        // Remove custom category
+        function removeCustomCategory(category) {
+            if (confirm(`Remove category "${category}"? All budgets and transactions for this category will be deleted.`)) {
+                delete customCategories[category];
+                delete selectedCategories[category];
+                // Remove transactions with this category
+                transactions = transactions.filter(t => t.category !== category);
+                saveData();
+                renderBudgetTab();
+                updateHomeDropdowns();
+                updateOverviewCategorySelect();
+                updateUI();
+            }
+        }
+        
+        // Add custom category
+        function addCustomCategory() {
+            const newCategory = document.getElementById('newCategoryName').value.trim();
+            if (!newCategory) {
+                alert('Please enter a category name');
+                return;
+            }
+            
+            if (DEFAULT_CATEGORIES[newCategory] || customCategories[newCategory]) {
+                alert('Category already exists');
+                return;
+            }
+            
+            customCategories[newCategory] = [];
+            saveData();
+            document.getElementById('newCategoryName').value = '';
+            document.getElementById('customCategoryInput').style.display = 'none';
+            renderBudgetTab();
+            updateHomeDropdowns();
+            updateOverviewCategorySelect();
+        }
+                // Update Overview tab category select
+        function updateOverviewCategorySelect() {
+            const categories = Object.keys(selectedCategories);
+            const categorySelect = document.getElementById('categorySelect');
+            const currentValue = categorySelect.value;
+            
+            categorySelect.innerHTML = '<option value="">Select a category</option>';
+            categories.sort().forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                categorySelect.appendChild(option);
+            });
+            
+            if (currentValue && categories.includes(currentValue)) {
                 categorySelect.value = currentValue;
             }
         }
@@ -652,7 +927,7 @@
             const selectedMonth = document.getElementById('monthSelect').value || getCurrentMonth();
             const selectedCategory = document.getElementById('categorySelect').value;
             
-            if (!selectedCategory) {
+            if (!selectedCategory || !selectedCategories[selectedCategory]) {
                 document.getElementById('selectedCategoryName').textContent = '';
                 document.getElementById('subcategoryListContainer').innerHTML = '<p>Select a category to view expenses</p>';
                 if (chart) {
@@ -716,7 +991,7 @@
             document.getElementById('selectedCategoryName').textContent = selectedCategory;
             
             // Update chart
-            const categoryBudget = categoryBudgets[selectedCategory] || 0;
+            const categoryBudget = selectedCategories[selectedCategory]?.budget || 0;
             const totalExpense = categoryExpenses.reduce((sum, t) => sum + t.amount, 0);
             
             if (chart) {
@@ -746,24 +1021,14 @@
                             title: {
                                 display: true,
                                 text: 'Amount ($)',
-                                font: {
-                                    weight: 'bold'
-                                }
+                                font: { weight: 'bold' }
                             },
-                            grid: {
-                                color: '#e5e7eb'
-                            }
+                            grid: { color: '#e5e7eb' }
                         },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
+                        x: { grid: { display: false } }
                     },
                     plugins: {
-                        legend: {
-                            display: false
-                        },
+                        legend: { display: false },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
@@ -776,51 +1041,37 @@
             });
         }
         
-        // Update category budgets list in Overview
-        function updateCategoryBudgetsList() {
-            const categories = new Set();
-            transactions.forEach(t => {
-                if (t.category) categories.add(t.category);
+        // Update home dropdowns (categories and subcategories)
+        function updateHomeDropdowns() {
+            const categories = Object.keys(selectedCategories);
+            const categorySelect = document.getElementById('categorySelectHome');
+            const currentCategory = categorySelect.value;
+            
+            categorySelect.innerHTML = '<option value="">Select a category</option>';
+            categories.sort().forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                categorySelect.appendChild(option);
             });
             
-            const container = document.getElementById('categoryBudgetsList');
-            container.innerHTML = '';
-            
-            if (categories.size === 0) {
-                container.innerHTML = '<p style="padding: 20px; text-align: center; color: #6b7280;">No categories yet. Add transactions in Home tab first.</p>';
-                return;
-            }
-            
-            Array.from(categories).sort().forEach(category => {
-                const div = document.createElement('div');
-                div.className = 'category-budget-item';
-                div.innerHTML = `
-                    <span><strong>${category}</strong></span>
-                    <div>
-                        <input type="number" id="budget_${category.replace(/\s/g, '_')}" 
-                               value="${categoryBudgets[category] || 0}" step="0.01" 
-                               placeholder="Budget amount">
-                        <button class="btn-small" onclick="saveCategoryBudget('${category.replace(/'/g, "\\'")}')">Save</button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-        
-        // Save category budget
-        function saveCategoryBudget(category) {
-            const inputId = `budget_${category.replace(/\s/g, '_')}`;
-            const input = document.getElementById(inputId);
-            const amount = parseFloat(input.value);
-            
-            if (!isNaN(amount) && amount >= 0) {
-                categoryBudgets[category] = amount;
-                saveData();
-                updateOverviewTab();
-                alert(`Budget for ${category} set to $${amount.toFixed(2)}`);
+            if (currentCategory && categories.includes(currentCategory)) {
+                categorySelect.value = currentCategory;
+                updateSubcategoryDropdown(currentCategory);
             } else {
-                alert('Please enter a valid amount');
+                document.getElementById('subcategorySelectHome').innerHTML = '<option value="">Select a sub-category (optional)</option>';
             }
+        }
+        // Update entire UI
+        function updateUI() {
+            updateHomeTab();
+            updateHomeDropdowns();
+            updateOverviewCategorySelect();
+            const currentMonth = getCurrentMonth();
+            if (!document.getElementById('monthSelect').value) {
+                document.getElementById('monthSelect').value = currentMonth;
+            }
+            updateOverviewTab();
         }
         
         // Edit monthly budget (click on card)
@@ -835,24 +1086,13 @@
             }
         }
         
-        // Update entire UI
-        function updateUI() {
-            updateHomeTab();
-            updateCategoryBudgetsList();
-            const currentMonth = getCurrentMonth();
-            if (!document.getElementById('monthSelect').value) {
-                document.getElementById('monthSelect').value = currentMonth;
-            }
-            updateOverviewTab();
-        }
-        
         // Event Listeners
         document.getElementById('transactionForm').addEventListener('submit', (e) => {
             e.preventDefault();
             
             const amount = document.getElementById('amount').value;
-            const category = document.getElementById('category').value;
-            const subcategory = document.getElementById('subcategory').value;
+            const category = document.getElementById('categorySelectHome').value;
+            const subcategory = document.getElementById('subcategorySelectHome').value;
             const description = document.getElementById('description').value;
             
             if (!amount || amount <= 0) {
@@ -861,14 +1101,15 @@
             }
             
             if (!category) {
-                alert('Please enter a category');
+                alert('Please select a category');
                 return;
             }
             
             addTransaction(amount, category, subcategory, description);
             
             // Reset form
-            e.target.reset();
+            document.getElementById('amount').value = '';
+            document.getElementById('description').value = '';
             document.getElementById('amount').focus();
         });
         
@@ -882,6 +1123,22 @@
             updateOverviewTab();
         });
         
+        document.getElementById('categorySelectHome').addEventListener('change', (e) => {
+            updateSubcategoryDropdown(e.target.value);
+        });
+        
+        // Add custom category buttons
+        document.getElementById('addCustomCategoryBtn').addEventListener('click', () => {
+            document.getElementById('customCategoryInput').style.display = 'flex';
+        });
+        
+        document.getElementById('confirmAddCategory').addEventListener('click', addCustomCategory);
+        
+        document.getElementById('cancelAddCategory').addEventListener('click', () => {
+            document.getElementById('customCategoryInput').style.display = 'none';
+            document.getElementById('newCategoryName').value = '';
+        });
+        
         // Tab switching
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -893,8 +1150,9 @@
                 btn.classList.add('active');
                 document.getElementById(tabName).classList.add('active');
                 
-                if (tabName === 'overview') {
-                    updateCategoryBudgetsList();
+                if (tabName === 'budget') {
+                    renderBudgetTab();
+                } else if (tabName === 'overview') {
                     updateOverviewTab();
                 } else {
                     updateHomeTab();
@@ -902,9 +1160,14 @@
             });
         });
         
+        // Make functions global for onclick handlers
+        window.toggleSubcategoryBudget = toggleSubcategoryBudget;
+        window.removeCustomCategory = removeCustomCategory;
+        
         // Initialize
         displayCurrentDate();
         loadData();
+        renderBudgetTab();
     </script>
 </body>
 </html>
