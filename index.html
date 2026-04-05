@@ -131,6 +131,7 @@
             font-size: 0.95rem;
             transition: all 0.2s ease;
             font-family: inherit;
+            background: white;
         }
 
         input:focus, select:focus {
@@ -157,7 +158,7 @@
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
-        /* Tabs at bottom - Centered */
+        /* Tabs at bottom - Single row */
         .tabs-bottom {
             position: fixed;
             bottom: 16px;
@@ -166,7 +167,7 @@
             background: white;
             display: flex;
             gap: 10px;
-            padding: 8px 16px;
+            padding: 8px 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             border-radius: 50px;
             z-index: 1000;
@@ -177,7 +178,6 @@
         }
 
         .tab-btn {
-            flex: 1;
             padding: 10px 20px;
             background: #f3f4f6;
             color: #6b7280;
@@ -217,15 +217,16 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
         
-        .overview-controls .form-group {
+        .overview-input-group {
             margin-bottom: 16px;
+            width: 100%;
         }
         
-        .overview-controls .form-group:last-child {
+        .overview-input-group:last-child {
             margin-bottom: 0;
         }
         
-        .overview-controls label {
+        .overview-input-group label {
             display: block;
             margin-bottom: 8px;
             color: #374151;
@@ -233,8 +234,8 @@
             font-size: 0.85rem;
         }
         
-        .overview-controls select, 
-        .overview-controls input {
+        .overview-input-group select, 
+        .overview-input-group input {
             width: 100%;
             padding: 12px;
             border: 2px solid #e5e7eb;
@@ -242,13 +243,7 @@
             font-size: 0.95rem;
             font-family: inherit;
             background: white;
-        }
-        
-        .overview-controls select:focus,
-        .overview-controls input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-sizing: border-box;
         }
 
         .chart-container {
@@ -396,6 +391,60 @@
             transform: none;
         }
 
+        /* Settings Tab */
+        .settings-container {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .settings-container h2 {
+            margin-bottom: 20px;
+            color: #1f2937;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .settings-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .settings-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .settings-section h3 {
+            margin-bottom: 12px;
+            color: #374151;
+            font-size: 1rem;
+        }
+
+        .settings-section p {
+            color: #6b7280;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+
+        .reset-btn {
+            background: #ef4444;
+            margin-top: 10px;
+        }
+
+        .reset-btn:hover {
+            background: #dc2626;
+        }
+
+        .warning-text {
+            color: #ef4444;
+            font-size: 0.8rem;
+            margin-top: 10px;
+        }
+
         /* Modal Styles */
         .modal {
             display: none;
@@ -497,10 +546,11 @@
             border-radius: 20px;
         }
 
+        /* Mobile specific adjustments */
         @media (max-width: 480px) {
             body {
                 padding: 12px;
-                padding-bottom: 80px;
+                padding-bottom: 90px;
             }
             
             .card {
@@ -517,12 +567,12 @@
             
             .tabs-bottom {
                 padding: 6px 12px;
-                gap: 8px;
-                min-width: 260px;
+                gap: 6px;
+                min-width: 300px;
             }
             
             .tab-btn {
-                padding: 8px 12px;
+                padding: 8px 14px;
                 font-size: 0.8rem;
             }
 
@@ -532,6 +582,16 @@
             
             .modal-content {
                 padding: 20px;
+            }
+            
+            .overview-controls {
+                padding: 16px;
+            }
+            
+            .overview-input-group select, 
+            .overview-input-group input {
+                padding: 10px;
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -601,11 +661,11 @@
         <!-- Overview Tab -->
         <div id="overview" class="tab-content">
             <div class="overview-controls">
-                <div class="form-group">
+                <div class="overview-input-group">
                     <label for="monthSelect">Select Month</label>
                     <input type="month" id="monthSelect">
                 </div>
-                <div class="form-group">
+                <div class="overview-input-group">
                     <label for="categorySelect">Select Category</label>
                     <select id="categorySelect">
                         <option value="">Select a category</option>
@@ -622,13 +682,33 @@
                 <div id="subcategoryListContainer"></div>
             </div>
         </div>
+
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-content">
+            <div class="settings-container">
+                <h2>Settings</h2>
+                
+                <div class="settings-section">
+                    <h3>Reset All Data</h3>
+                    <p>This will permanently delete all your transactions, budgets, and categories. This action cannot be undone.</p>
+                    <button id="resetAllDataBtn" class="reset-btn">Reset Everything</button>
+                    <div class="warning-text">⚠️ Warning: All data will be lost!</div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3>About</h3>
+                    <p>Budget Tracker App v1.0<br>Track your expenses easily.</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Bottom Tabs -->
+    <!-- Bottom Tabs - Single Row -->
     <div class="tabs-bottom">
         <button class="tab-btn active" data-tab="home">Home</button>
         <button class="tab-btn" data-tab="budget">Budget</button>
         <button class="tab-btn" data-tab="overview">Overview</button>
+        <button class="tab-btn" data-tab="settings">Settings</button>
     </div>
 
     <!-- Add Category Modal -->
@@ -668,6 +748,25 @@
         </div>
     </div>
 
+    <!-- Reset Confirmation Modal -->
+    <div id="resetConfirmModal" class="modal">
+        <div class="modal-content">
+            <h3>Reset All Data?</h3>
+            <p style="margin-bottom: 20px;">This will permanently delete:</p>
+            <ul style="margin-bottom: 20px; margin-left: 20px; color: #6b7280;">
+                <li>All transactions</li>
+                <li>All category budgets</li>
+                <li>All selected categories</li>
+                <li>Monthly budget settings</li>
+            </ul>
+            <p style="margin-bottom: 20px; color: #ef4444; font-weight: bold;">This action cannot be undone!</p>
+            <div class="modal-buttons">
+                <button id="confirmResetBtn" style="background: #ef4444;">Yes, Reset Everything</button>
+                <button id="cancelResetBtn" class="btn-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // DEFAULT CATEGORIES AND SUB-CATEGORIES
         const DEFAULT_CATEGORIES = {
@@ -686,7 +785,7 @@
         // App State
         let transactions = [];
         let monthlyBudget = 0;
-        let selectedCategories = {}; // { categoryName: { budget: 0, subcategoryBudgets: {} } }
+        let selectedCategories = {};
         let customCategories = {};
         let chart = null;
         let currentEditingCategory = null;
@@ -722,6 +821,21 @@
             }
             
             updateUI();
+        }
+        
+        // Reset all data
+        function resetAllData() {
+            transactions = [];
+            monthlyBudget = 0;
+            selectedCategories = {
+                "Fixed Expenses": { budget: 0, subcategoryBudgets: {} },
+                "Car": { budget: 0, subcategoryBudgets: {} },
+                "Food": { budget: 0, subcategoryBudgets: {} }
+            };
+            customCategories = {};
+            saveData();
+            updateUI();
+            renderBudgetTab();
         }
         
         // Save data
@@ -911,7 +1025,6 @@
             updateHomeDropdowns();
             updateOverviewCategorySelect();
             
-            // Close modal and open budget modal for new category
             document.getElementById('addCategoryModal').classList.remove('active');
             setTimeout(() => openBudgetModal(customName), 100);
         }
@@ -998,7 +1111,6 @@
             
             selectedCategories[currentEditingCategory].budget = categoryBudget;
             
-            // Save subcategory budgets
             const subcategories = getSubcategories(currentEditingCategory);
             subcategories.forEach(sub => {
                 const subInput = document.getElementById(`subbudget_${sub.replace(/\s/g, '_')}`);
@@ -1072,7 +1184,6 @@
             const monthExpenses = getAllExpensesForMonth(selectedMonth);
             const categoryExpenses = monthExpenses.filter(t => t.category === selectedCategory);
             
-            // Group by subcategory
             const groupedBySubcategory = {};
             categoryExpenses.forEach(t => {
                 const sub = t.subcategory || 'Uncategorized';
@@ -1108,7 +1219,6 @@
             
             document.getElementById('selectedCategoryName').textContent = selectedCategory;
             
-            // Update chart
             const categoryBudget = selectedCategories[selectedCategory]?.budget || 0;
             const totalExpense = categoryExpenses.reduce((sum, t) => sum + t.amount, 0);
             
@@ -1155,6 +1265,23 @@
             }
         }
         
+        // Show reset confirmation modal
+        function showResetConfirmation() {
+            document.getElementById('resetConfirmModal').classList.add('active');
+        }
+        
+        // Execute reset
+        function executeReset() {
+            resetAllData();
+            document.getElementById('resetConfirmModal').classList.remove('active');
+            alert('All data has been reset successfully!');
+        }
+        
+        // Close reset modal
+        function closeResetModal() {
+            document.getElementById('resetConfirmModal').classList.remove('active');
+        }
+        
         // Make functions global
         window.removeCategory = removeCategory;
         window.openBudgetModal = openBudgetModal;
@@ -1180,6 +1307,11 @@
         document.getElementById('monthSelect').addEventListener('change', () => updateOverviewTab());
         document.getElementById('categorySelect').addEventListener('change', () => updateOverviewTab());
         document.getElementById('categorySelectHome').addEventListener('change', (e) => updateSubcategoryDropdown(e.target.value));
+        
+        // Reset button listeners
+        document.getElementById('resetAllDataBtn').addEventListener('click', showResetConfirmation);
+        document.getElementById('confirmResetBtn').addEventListener('click', executeReset);
+        document.getElementById('cancelResetBtn').addEventListener('click', closeResetModal);
         
         // Modal buttons
         document.getElementById('showAddCategoryModal').addEventListener('click', () => {
@@ -1215,7 +1347,7 @@
                 document.getElementById(tabName).classList.add('active');
                 if (tabName === 'budget') renderBudgetTab();
                 else if (tabName === 'overview') updateOverviewTab();
-                else updateHomeTab();
+                else if (tabName === 'home') updateHomeTab();
             });
         });
         
