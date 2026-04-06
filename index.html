@@ -287,29 +287,36 @@
             margin-bottom: 10px;
         }
 
-        .transaction-row {
+             .transaction-row {
             display: flex;
             justify-content: space-between;
-            padding: 6px 0;
+            align-items: center;
+            padding: 8px 0;
             color: #6b7280;
             font-size: 0.85rem;
-            gap: 10px;
+            gap: 12px;
+            flex-wrap: nowrap;
         }
 
         .transaction-date {
             min-width: 85px;
+            flex-shrink: 0;
         }
 
         .transaction-description {
             flex: 1;
             text-align: left;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .transaction-amount {
             min-width: 70px;
             text-align: right;
+            flex-shrink: 0;
         }
-
+        
         .subtotal {
             margin-top: 8px;
             padding-top: 6px;
@@ -622,21 +629,21 @@
             }
             
             .transaction-row {
-                flex-wrap: wrap;
+                gap: 8px;
             }
             
             .transaction-date {
-                width: 100%;
+                width: 70px;
+                font-size: 0.75rem;
             }
             
             .transaction-description {
-                width: 100%;
-                margin: 4px 0;
+               font-size: 0.75rem;
             }
             
             .transaction-amount {
-                width: 100%;
-                text-align: left;
+                min-width: 60px;
+                font-size: 0.75rem;
             }
         }
     </style>
