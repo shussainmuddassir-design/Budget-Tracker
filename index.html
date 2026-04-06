@@ -255,7 +255,7 @@
         }
 
         canvas {
-            max-height: 300px;
+            max-height: 400px;
             width: 100%;
         }
 
@@ -293,6 +293,21 @@
             padding: 6px 0;
             color: #6b7280;
             font-size: 0.85rem;
+            gap: 10px;
+        }
+
+        .transaction-date {
+            min-width: 85px;
+        }
+
+        .transaction-description {
+            flex: 1;
+            text-align: left;
+        }
+
+        .transaction-amount {
+            min-width: 70px;
+            text-align: right;
         }
 
         .subtotal {
@@ -356,18 +371,30 @@
             font-size: 1.1rem;
             color: #1f2937;
             margin-bottom: 12px;
+            padding-right: 30px;
         }
 
-        .budget-card-item .budget-amount {
-            font-size: 1.5rem;
-            font-weight: 700;
+        .budget-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .budget-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .budget-amount {
+            font-size: 1rem;
+            font-weight: 600;
             color: #3b82f6;
         }
 
-        .budget-card-item .budget-label {
-            font-size: 0.75rem;
-            color: #6b7280;
-            margin-top: 5px;
+        .expense-amount {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ef4444;
         }
 
         .remove-cat-btn {
@@ -593,6 +620,24 @@
                 padding: 10px;
                 font-size: 0.9rem;
             }
+            
+            .transaction-row {
+                flex-wrap: wrap;
+            }
+            
+            .transaction-date {
+                width: 100%;
+            }
+            
+            .transaction-description {
+                width: 100%;
+                margin: 4px 0;
+            }
+            
+            .transaction-amount {
+                width: 100%;
+                text-align: left;
+            }
         }
     </style>
 </head>
@@ -768,10 +813,10 @@
     </div>
 
     <script>
-        // DEFAULT CATEGORIES AND SUB-CATEGORIES
+        // DEFAULT CATEGORIES AND SUB-CATEGORIES (Added Parking to Car)
         const DEFAULT_CATEGORIES = {
             "Fixed Expenses": ["Rent", "Business", "Savings", "Balloon Payment", "Parents"],
-            "Car": ["Fuel", "Maintenance", "Insurance", "Parking", "Installment"],
+            "Car": ["Fuel", "Maintenance", "Insurance", "Installment", "Parking"],
             "Food": ["Groceries", "Dine Out / Take Away / Home Delivery", "Snacks"],
             "Healthcare": ["Pharmacy", "Doctor"],
             "Bills & Utilities": ["Electricity", "Water", "Internet", "Phone"],
@@ -889,6 +934,13 @@
             return transactions.filter(t => t.month === month);
         }
         
+        // Get total expenses for a category in current month
+        function getCategoryExpenseForCurrentMonth(category) {
+            const currentMonth = getCurrentMonth();
+            const monthExpenses = getAllExpensesForMonth(currentMonth);
+            return monthExpenses.filter(t => t.category === category).reduce((sum, t) => sum + t.amount, 0);
+        }
+        
         // Get total expenses
         function getTotalExpensesForMonth(month) {
             const expenses = getRegularExpensesForMonth(month);
@@ -928,7 +980,6 @@
         function updateHomeDropdowns() {
             const categories = Object.keys(selectedCategories);
             const categorySelect = document.getElementById('categorySelectHome');
-            const currentCategory = categorySelect.value;
             
             categorySelect.innerHTML = '<option value="">Select a category</option>';
             categories.sort().forEach(cat => {
@@ -938,15 +989,12 @@
                 categorySelect.appendChild(option);
             });
             
-            if (currentCategory && categories.includes(currentCategory)) {
-                categorySelect.value = currentCategory;
-                updateSubcategoryDropdown(currentCategory);
-            } else {
-                document.getElementById('subcategorySelectHome').innerHTML = '<option value="">Select a sub-category (optional)</option>';
-            }
+            // Reset to default empty option
+            categorySelect.value = "";
+            document.getElementById('subcategorySelectHome').innerHTML = '<option value="">Select a sub-category (optional)</option>';
         }
         
-        // Update subcategory dropdown
+        // Update subcategory dropdown based on selected category
         function updateSubcategoryDropdown(category) {
             const subcategories = getSubcategories(category);
             const subSelect = document.getElementById('subcategorySelectHome');
@@ -1029,10 +1077,11 @@
             setTimeout(() => openBudgetModal(customName), 100);
         }
         
-        // Render Budget Tab (Cards)
+        // Render Budget Tab (Cards with Budget and Expense)
         function renderBudgetTab() {
             const container = document.getElementById('categoriesGrid');
             const categories = Object.keys(selectedCategories).sort();
+            const currentMonth = getCurrentMonth();
             
             if (categories.length === 0) {
                 container.innerHTML = '<div class="empty-state">No categories selected. Tap + to add categories.</div>';
@@ -1042,12 +1091,19 @@
             container.innerHTML = '';
             categories.forEach(category => {
                 const budget = selectedCategories[category]?.budget || 0;
+                const expense = getCategoryExpenseForCurrentMonth(category);
                 const card = document.createElement('div');
                 card.className = 'budget-card-item';
                 card.innerHTML = `
                     <h3>${category}</h3>
-                    <div class="budget-amount">$${budget.toFixed(2)}</div>
-                    <div class="budget-label">Budget</div>
+                    <div class="budget-row">
+                        <span class="budget-label">Budget:</span>
+                        <span class="budget-amount">$${budget.toFixed(2)}</span>
+                    </div>
+                    <div class="budget-row">
+                        <span class="budget-label">Expense:</span>
+                        <span class="expense-amount">$${expense.toFixed(2)}</span>
+                    </div>
                     ${!DEFAULT_CATEGORIES[category] ? 
                         `<button class="remove-cat-btn" onclick="removeCategory('${category.replace(/'/g, "\\'")}')">✕</button>` : ''}
                 `;
@@ -1169,7 +1225,7 @@
             }
         }
         
-        // Update Overview tab
+        // Update Overview tab with Horizontal Bar Graph
         function updateOverviewTab() {
             const selectedMonth = document.getElementById('monthSelect').value || getCurrentMonth();
             const selectedCategory = document.getElementById('categorySelect').value;
@@ -1184,6 +1240,7 @@
             const monthExpenses = getAllExpensesForMonth(selectedMonth);
             const categoryExpenses = monthExpenses.filter(t => t.category === selectedCategory);
             
+            // Group by subcategory
             const groupedBySubcategory = {};
             categoryExpenses.forEach(t => {
                 const sub = t.subcategory || 'Uncategorized';
@@ -1205,7 +1262,11 @@
                     expenses.forEach(exp => {
                         const row = document.createElement('div');
                         row.className = 'transaction-row';
-                        row.innerHTML = `<span>${formatDate(exp.date)}</span><span>$${exp.amount.toFixed(2)}</span>`;
+                        row.innerHTML = `
+                            <span class="transaction-date">${formatDate(exp.date)}</span>
+                            <span class="transaction-description">${exp.description || '-'}</span>
+                            <span class="transaction-amount">$${exp.amount.toFixed(2)}</span>
+                        `;
                         groupDiv.appendChild(row);
                         subtotal += exp.amount;
                     });
@@ -1219,6 +1280,7 @@
             
             document.getElementById('selectedCategoryName').textContent = selectedCategory;
             
+            // Update chart - HORIZONTAL BAR GRAPH
             const categoryBudget = selectedCategories[selectedCategory]?.budget || 0;
             const totalExpense = categoryExpenses.reduce((sum, t) => sum + t.amount, 0);
             
@@ -1235,9 +1297,18 @@
                     }]
                 },
                 options: {
+                    indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: true,
-                    scales: { y: { beginAtZero: true, title: { display: true, text: 'Amount ($)' } } },
+                    scales: {
+                        x: { 
+                            beginAtZero: true,
+                            title: { display: true, text: 'Amount ($)' }
+                        },
+                        y: {
+                            title: { display: true, text: '' }
+                        }
+                    },
                     plugins: { legend: { display: false } }
                 }
             });
@@ -1253,6 +1324,7 @@
                 document.getElementById('monthSelect').value = currentMonth;
             }
             updateOverviewTab();
+            renderBudgetTab();
         }
         
         // Edit monthly budget
@@ -1298,15 +1370,25 @@
             if (!category) { alert('Please select a category'); return; }
             
             addTransaction(amount, category, subcategory, description);
+            
+            // Reset form fields
             document.getElementById('amount').value = '';
             document.getElementById('description').value = '';
+            document.getElementById('categorySelectHome').value = '';
+            document.getElementById('subcategorySelectHome').innerHTML = '<option value="">Select a sub-category (optional)</option>';
             document.getElementById('amount').focus();
         });
         
         document.getElementById('budgetCard').addEventListener('click', editMonthlyBudget);
         document.getElementById('monthSelect').addEventListener('change', () => updateOverviewTab());
         document.getElementById('categorySelect').addEventListener('change', () => updateOverviewTab());
-        document.getElementById('categorySelectHome').addEventListener('change', (e) => updateSubcategoryDropdown(e.target.value));
+        document.getElementById('categorySelectHome').addEventListener('change', (e) => {
+            if (e.target.value) {
+                updateSubcategoryDropdown(e.target.value);
+            } else {
+                document.getElementById('subcategorySelectHome').innerHTML = '<option value="">Select a sub-category (optional)</option>';
+            }
+        });
         
         // Reset button listeners
         document.getElementById('resetAllDataBtn').addEventListener('click', showResetConfirmation);
