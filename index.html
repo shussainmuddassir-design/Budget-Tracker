@@ -1452,13 +1452,16 @@
             });
         }
         
-        // Render Summary Tab
+               // Render Summary Tab (Excluding Fixed Expenses)
         function renderSummaryTab() {
             const categories = Object.keys(selectedCategories).sort();
             const currentMonth = getCurrentMonth();
             const tbody = document.getElementById('summaryTableBody');
             
-            if (categories.length === 0) {
+            // Filter out Fixed Expenses category
+            const filteredCategories = categories.filter(cat => cat !== 'Fixed Expenses');
+            
+            if (filteredCategories.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px;">No categories selected. Go to Budget tab to add categories.</td></tr>';
                 return;
             }
@@ -1468,7 +1471,7 @@
             let totalBalance = 0;
             
             tbody.innerHTML = '';
-            categories.forEach(category => {
+            filteredCategories.forEach(category => {
                 const budget = selectedCategories[category]?.budget || 0;
                 const expense = getCategoryExpenseForCurrentMonth(category);
                 const balance = budget - expense;
