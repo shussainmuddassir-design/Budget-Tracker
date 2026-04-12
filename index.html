@@ -495,53 +495,67 @@
             margin-top: 10px;
         }
 
-        /* Summary Tab Table */
+        /* Summary Tab Table - No Horizontal Scroll */
         .summary-container {
             background: white;
             border-radius: 20px;
-            padding: 24px;
+            padding: 20px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
         
         .summary-container h2 {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             color: #1f2937;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 600;
         }
         
         .summary-subtitle {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             color: #6b7280;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
         }
         
         .table-wrapper {
-            overflow-x: auto;
+            overflow-x: visible;
         }
         
         #summaryTable {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
         
         #summaryTable th {
-            padding: 12px;
+            padding: 10px 8px;
             text-align: left;
             background: #f9fafb;
             font-weight: 600;
             color: #374151;
+            font-size: 0.75rem;
             border-bottom: 2px solid #e5e7eb;
+        }
+        
+        #summaryTable th:first-child {
+            width: 40%;
         }
         
         #summaryTable th:not(:first-child) {
             text-align: right;
+            width: 20%;
         }
         
         #summaryTable td {
-            padding: 12px;
+            padding: 8px 8px;
             border-bottom: 1px solid #e5e7eb;
             color: #6b7280;
+            font-size: 0.75rem;
+        }
+        
+        #summaryTable td:first-child {
+            font-weight: 500;
+            white-space: normal;
+            word-wrap: break-word;
         }
         
         #summaryTable td:not(:first-child) {
@@ -741,6 +755,12 @@
             
             .tab-header h1 {
                 font-size: 1.5rem;
+            }
+            
+            #summaryTable th,
+            #summaryTable td {
+                padding: 6px 4px;
+                font-size: 0.7rem;
             }
         }
     </style>
@@ -973,6 +993,11 @@
         let chart = null;
         let currentEditingCategory = null;
         
+        // Helper function to format currency with commas
+        function formatCurrency(amount) {
+            return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        
         // Load data
         function loadData() {
             const savedTransactions = localStorage.getItem('budgetTransactions');
@@ -1109,9 +1134,9 @@
         // Update Home tab
         function updateHomeTab() {
             const currentMonth = getCurrentMonth();
-            document.getElementById('displayBudget').textContent = `$${monthlyBudget.toFixed(2)}`;
-            document.getElementById('displayExpense').textContent = `$${getTotalExpensesForMonth(currentMonth).toFixed(2)}`;
-            document.getElementById('displayBalance').textContent = `$${getBalance(currentMonth).toFixed(2)}`;
+            document.getElementById('displayBudget').textContent = `$${formatCurrency(monthlyBudget)}`;
+            document.getElementById('displayExpense').textContent = `$${formatCurrency(getTotalExpensesForMonth(currentMonth))}`;
+            document.getElementById('displayBalance').textContent = `$${formatCurrency(getBalance(currentMonth))}`;
         }
         
         // Update home dropdowns
@@ -1236,11 +1261,11 @@
                     <h3>${category}</h3>
                     <div class="budget-row">
                         <span class="budget-label">Budget:</span>
-                        <span class="budget-amount">$${budget.toFixed(2)}</span>
+                        <span class="budget-amount">$${formatCurrency(budget)}</span>
                     </div>
                     <div class="budget-row">
                         <span class="budget-label">Expense:</span>
-                        <span class="expense-amount">$${expense.toFixed(2)}</span>
+                        <span class="expense-amount">$${formatCurrency(expense)}</span>
                     </div>
                     ${!DEFAULT_CATEGORIES[category] ? 
                         `<button class="remove-cat-btn" onclick="removeCategory('${category.replace(/'/g, "\\'")}')">✕</button>` : ''}
@@ -1403,14 +1428,14 @@
                         row.innerHTML = `
                             <span class="transaction-date">${formatDate(exp.date)}</span>
                             <span class="transaction-description">${exp.description || '-'}</span>
-                            <span class="transaction-amount">$${exp.amount.toFixed(2)}</span>
+                            <span class="transaction-amount">$${formatCurrency(exp.amount)}</span>
                         `;
                         groupDiv.appendChild(row);
                         subtotal += exp.amount;
                     });
                     const subtotalDiv = document.createElement('div');
                     subtotalDiv.className = 'subtotal';
-                    subtotalDiv.innerHTML = `<strong>${sub} Total: $${subtotal.toFixed(2)}</strong>`;
+                    subtotalDiv.innerHTML = `<strong>${sub} Total: $${formatCurrency(subtotal)}</strong>`;
                     groupDiv.appendChild(subtotalDiv);
                     container.appendChild(groupDiv);
                 }
@@ -1452,7 +1477,7 @@
             });
         }
         
-               // Render Summary Tab (Excluding Fixed Expenses)
+        // Render Summary Tab (Excluding Fixed Expenses, with color coding and commas)
         function renderSummaryTab() {
             const categories = Object.keys(selectedCategories).sort();
             const currentMonth = getCurrentMonth();
@@ -1462,7 +1487,7 @@
             const filteredCategories = categories.filter(cat => cat !== 'Fixed Expenses');
             
             if (filteredCategories.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px;">No categories selected. Go to Budget tab to add categories.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px;">No categories selected. Go to Budget tab to add categories. </td></tr>';
                 return;
             }
             
@@ -1480,12 +1505,13 @@
                 totalExpense += expense;
                 totalBalance += balance;
                 
+                const balanceClass = balance >= 0 ? 'summary-balance-positive' : 'summary-balance-negative';
                 const row = tbody.insertRow();
                 row.innerHTML = `
-                    <td style="font-weight: 500;">${category}</td>
-                    <td class="summary-budget">$${budget.toFixed(2)}</td>
-                    <td class="summary-expense">$${expense.toFixed(2)}</td>
-                    <td class="${balance >= 0 ? 'summary-balance-positive' : 'summary-balance-negative'}">$${balance.toFixed(2)}</td>
+                    <td>${category}</td>
+                    <td class="summary-budget">$${formatCurrency(budget)}</td>
+                    <td class="summary-expense">$${formatCurrency(expense)}</td>
+                    <td class="${balanceClass}">$${formatCurrency(balance)}</td>
                 `;
             });
             
@@ -1493,11 +1519,12 @@
             const totalRow = tbody.insertRow();
             totalRow.style.background = '#f3f4f6';
             totalRow.style.fontWeight = 'bold';
+            const totalBalanceClass = totalBalance >= 0 ? 'summary-balance-positive' : 'summary-balance-negative';
             totalRow.innerHTML = `
                 <td style="border-top: 2px solid #e5e7eb; font-weight: 700;">TOTAL</td>
-                <td style="border-top: 2px solid #e5e7eb; font-weight: 700;" class="summary-budget">$${totalBudget.toFixed(2)}</td>
-                <td style="border-top: 2px solid #e5e7eb; font-weight: 700;" class="summary-expense">$${totalExpense.toFixed(2)}</td>
-                <td style="border-top: 2px solid #e5e7eb; font-weight: 700;" class="${totalBalance >= 0 ? 'summary-balance-positive' : 'summary-balance-negative'}">$${totalBalance.toFixed(2)}</td>
+                <td style="border-top: 2px solid #e5e7eb; font-weight: 700;" class="summary-budget">$${formatCurrency(totalBudget)}</td>
+                <td style="border-top: 2px solid #e5e7eb; font-weight: 700;" class="summary-expense">$${formatCurrency(totalExpense)}</td>
+                <td style="border-top: 2px solid #e5e7eb; font-weight: 700;" class="${totalBalanceClass}">$${formatCurrency(totalBalance)}</td>
             `;
         }
         // Update UI
