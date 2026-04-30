@@ -1023,27 +1023,24 @@
             return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
         
-        // Get budget for a specific category and month (based on history)
+               // Get budget for a specific category and month (based on history)
         function getBudgetForMonth(category, month) {
             if (!categoryBudgetsHistory[category] || !categoryBudgetsHistory[category].history || categoryBudgetsHistory[category].history.length === 0) {
                 return 0;
             }
             
-            // Convert month (YYYY-MM) to date object (first day of month)
-            const [year, monthNum] = month.split('-');
-            const targetDate = new Date(parseInt(year), parseInt(monthNum) - 1, 1);
+            // Convert month (YYYY-MM) to a comparable string (YYYYMM)
+            const targetMonth = month.replace('-', '');
             
             // Get all budget entries sorted by date (oldest first)
-            const history = [...categoryBudgetsHistory[category].history].sort((a, b) => new Date(a.date) - new Date(b.date));
+            const history = [...categoryBudgetsHistory[category].history].sort((a, b) => a.date.localeCompare(b.date));
             
             // Find the latest budget entry that was set on or before the target month
             let applicableBudget = 0;
             for (let entry of history) {
-                const entryDate = new Date(entry.date);
-                if (entryDate <= targetDate) {
+                const entryYearMonth = entry.date.substring(0, 7).replace('-', '');
+                if (entryYearMonth <= targetMonth) {
                     applicableBudget = entry.amount;
-                } else {
-                    break;
                 }
             }
             
