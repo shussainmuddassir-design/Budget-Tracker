@@ -783,6 +783,89 @@
                 font-size: 0.7rem;
             }
         }
+                /* Recent Transactions */
+        .recent-transactions {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+        
+        .recent-transactions h3 {
+            margin-bottom: 16px;
+            color: #1f2937;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .recent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .recent-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 12px;
+            transition: background 0.2s;
+        }
+        
+        .recent-item:hover {
+            background: #f3f4f6;
+        }
+        
+        .recent-info {
+            flex: 1;
+        }
+        
+        .recent-category {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.85rem;
+        }
+        
+        .recent-details {
+            display: flex;
+            gap: 12px;
+            margin-top: 4px;
+            font-size: 0.7rem;
+            color: #6b7280;
+        }
+        
+        .recent-amount {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .recent-amount.income {
+            color: #10b981;
+        }
+        
+        .recent-amount.expense {
+            color: #ef4444;
+        }
+        
+        .delete-transaction-btn {
+            background: #ef4444;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .delete-transaction-btn:hover {
+            background: #dc2626;
+            transform: none;
+        }
     </style>
 </head>
 <body>
@@ -838,6 +921,14 @@
                     
                     <button type="submit">Add Transaction</button>
                 </form>
+                </div>
+
+            <!-- Recent Transactions Section -->
+            <div class="recent-transactions">
+                <h3>Recent Transactions</h3>
+                <div id="recentTransactionsList" class="recent-list">
+                    <p style="text-align: center; color: #6b7280; padding: 20px;">No transactions yet</p>
+                </div>
             </div>
         </div>
 
@@ -1046,7 +1137,50 @@
             
             return applicableBudget;
         }
+                // Render recent 5 transactions on Home tab
+        function renderRecentTransactions() {
+            const container = document.getElementById('recentTransactionsList');
+            
+            if (transactions.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 20px;">No transactions yet</p>';
+                return;
+            }
+            
+            // Sort by date (newest first) and take last 5
+            const recent = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+            
+            container.innerHTML = '';
+            recent.forEach(transaction => {
+                const isIncome = transaction.category === 'Fixed Expenses';
+                const amountClass = isIncome ? 'income' : 'expense';
+                const amountSign = isIncome ? '+' : '-';
+                
+                const div = document.createElement('div');
+                div.className = 'recent-item';
+                div.innerHTML = `
+                    <div class="recent-info">
+                        <div class="recent-category">${transaction.category}${transaction.subcategory ? ` / ${transaction.subcategory}` : ''}</div>
+                        <div class="recent-details">
+                            <span>${formatDate(transaction.date)}</span>
+                            ${transaction.description ? `<span>• ${transaction.description.substring(0, 30)}${transaction.description.length > 30 ? '...' : ''}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="recent-amount ${amountClass}">${amountSign}$${formatCurrency(transaction.amount)}</div>
+                    <button class="delete-transaction-btn" onclick="deleteTransaction(${transaction.id})">✕</button>
+                `;
+                container.appendChild(div);
+            });
+        }
         
+        // Delete a single transaction
+        function deleteTransaction(id) {
+            if (confirm('Delete this transaction?')) {
+                transactions = transactions.filter(t => t.id !== id);
+                saveData();
+                updateUI();
+                renderRecentTransactions();
+            }
+        }
         // Get current budget (most recent) for a category
         function getCurrentBudget(category) {
             if (!categoryBudgetsHistory[category] || !categoryBudgetsHistory[category].history || categoryBudgetsHistory[category].history.length === 0) {
@@ -1682,6 +1816,7 @@
         // Make functions global
         window.removeCategory = removeCategory;
         window.openBudgetModal = openBudgetModal;
+        window.deleteTransaction = deleteTransaction;
         
         // Event Listeners
         document.getElementById('transactionForm').addEventListener('submit', (e) => {
