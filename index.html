@@ -114,7 +114,7 @@
             padding: 20px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .form-container h2 {
@@ -169,6 +169,90 @@
         button:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Recent Transactions */
+        .recent-transactions {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+        
+        .recent-transactions h3 {
+            margin-bottom: 16px;
+            color: #1f2937;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .recent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .recent-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 12px;
+            transition: background 0.2s;
+        }
+        
+        .recent-item:hover {
+            background: #f3f4f6;
+        }
+        
+        .recent-info {
+            flex: 1;
+        }
+        
+        .recent-category {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.85rem;
+        }
+        
+        .recent-details {
+            display: flex;
+            gap: 12px;
+            margin-top: 4px;
+            font-size: 0.7rem;
+            color: #6b7280;
+        }
+        
+        .recent-amount {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .recent-amount.positive {
+            color: #10b981;
+        }
+        
+        .recent-amount.negative {
+            color: #ef4444;
+        }
+        
+        .delete-transaction-btn {
+            background: #ef4444;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .delete-transaction-btn:hover {
+            background: #dc2626;
+            transform: none;
         }
 
         /* Tabs at bottom - Single row with symbols */
@@ -782,89 +866,11 @@
                 padding: 6px 4px;
                 font-size: 0.7rem;
             }
-        }
-                /* Recent Transactions */
-        .recent-transactions {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            margin-bottom: 24px;
-        }
-        
-        .recent-transactions h3 {
-            margin-bottom: 16px;
-            color: #1f2937;
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-        
-        .recent-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .recent-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: #f9fafb;
-            border-radius: 12px;
-            transition: background 0.2s;
-        }
-        
-        .recent-item:hover {
-            background: #f3f4f6;
-        }
-        
-        .recent-info {
-            flex: 1;
-        }
-        
-        .recent-category {
-            font-weight: 600;
-            color: #374151;
-            font-size: 0.85rem;
-        }
-        
-        .recent-details {
-            display: flex;
-            gap: 12px;
-            margin-top: 4px;
-            font-size: 0.7rem;
-            color: #6b7280;
-        }
-        
-        .recent-amount {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        .recent-amount.income {
-            color: #10b981;
-        }
-        
-        .recent-amount.expense {
-            color: #ef4444;
-        }
-        
-        .delete-transaction-btn {
-            background: #ef4444;
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .delete-transaction-btn:hover {
-            background: #dc2626;
-            transform: none;
+            
+            .recent-details {
+                flex-direction: column;
+                gap: 4px;
+            }
         }
     </style>
 </head>
@@ -921,7 +927,7 @@
                     
                     <button type="submit">Add Transaction</button>
                 </form>
-                </div>
+            </div>
 
             <!-- Recent Transactions Section -->
             <div class="recent-transactions">
@@ -1086,7 +1092,7 @@
     </div>
 
     <script>
-        // DEFAULT CATEGORIES AND SUB-CATEGORIES
+            // DEFAULT CATEGORIES AND SUB-CATEGORIES
         const DEFAULT_CATEGORIES = {
             "Fixed Expenses": ["Rent", "Business", "Savings", "Balloon Payment", "Parents"],
             "Car": ["Fuel", "Maintenance", "Insurance", "Installment", "Parking"],
@@ -1096,15 +1102,14 @@
             "Home": ["Khadija", "Maintenance"],
             "Transportation": ["Public Transport", "Taxi", "Flight"],
             "Personal": ["Clothing", "Baby", "Vape", "Electronics"],
-            "Investments": ["Savings", "Balloon"],
-            "Strategic Expense": ["Books", "Courses", "Fine Dine"]
+            "Strategic Expense": []
         };
 
         // App State
         let transactions = [];
         let monthlyBudget = 0;
-        let selectedCategories = {}; // Keeps track of which categories are selected
-        let categoryBudgetsHistory = {}; // { "Car": { history: [{date: "2025-01-15", amount: 500}], subcategoryBudgets: {} } }
+        let selectedCategories = {};
+        let categoryBudgetsHistory = {};
         let customCategories = {};
         let chart = null;
         let currentEditingCategory = null;
@@ -1114,7 +1119,7 @@
             return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
         
-               // Get budget for a specific category and month (based on history)
+        // Get budget for a specific category and month (based on history)
         function getBudgetForMonth(category, month) {
             if (!categoryBudgetsHistory[category] || !categoryBudgetsHistory[category].history || categoryBudgetsHistory[category].history.length === 0) {
                 return 0;
@@ -1137,56 +1142,12 @@
             
             return applicableBudget;
         }
-                // Render recent 5 transactions on Home tab
-        function renderRecentTransactions() {
-            const container = document.getElementById('recentTransactionsList');
-            
-            if (transactions.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 20px;">No transactions yet</p>';
-                return;
-            }
-            
-            // Sort by date (newest first) and take last 5
-            const recent = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
-            
-            container.innerHTML = '';
-            recent.forEach(transaction => {
-                const isIncome = transaction.category === 'Fixed Expenses';
-                const amountClass = isIncome ? 'income' : 'expense';
-                const amountSign = isIncome ? '+' : '-';
-                
-                const div = document.createElement('div');
-                div.className = 'recent-item';
-                div.innerHTML = `
-                    <div class="recent-info">
-                        <div class="recent-category">${transaction.category}${transaction.subcategory ? ` / ${transaction.subcategory}` : ''}</div>
-                        <div class="recent-details">
-                            <span>${formatDate(transaction.date)}</span>
-                            ${transaction.description ? `<span>• ${transaction.description.substring(0, 30)}${transaction.description.length > 30 ? '...' : ''}</span>` : ''}
-                        </div>
-                    </div>
-                    <div class="recent-amount ${amountClass}">${amountSign}$${formatCurrency(transaction.amount)}</div>
-                    <button class="delete-transaction-btn" onclick="deleteTransaction(${transaction.id})">✕</button>
-                `;
-                container.appendChild(div);
-            });
-        }
         
-        // Delete a single transaction
-        function deleteTransaction(id) {
-            if (confirm('Delete this transaction?')) {
-                transactions = transactions.filter(t => t.id !== id);
-                saveData();
-                updateUI();
-                renderRecentTransactions();
-            }
-        }
         // Get current budget (most recent) for a category
         function getCurrentBudget(category) {
             if (!categoryBudgetsHistory[category] || !categoryBudgetsHistory[category].history || categoryBudgetsHistory[category].history.length === 0) {
                 return 0;
             }
-            // Sort by date and get the latest
             const sorted = [...categoryBudgetsHistory[category].history].sort((a, b) => new Date(b.date) - new Date(a.date));
             return sorted[0].amount;
         }
@@ -1199,7 +1160,6 @@
                 categoryBudgetsHistory[category] = { history: [], subcategoryBudgets: {} };
             }
             
-            // Check if there's already an entry for today (avoid duplicates)
             const existingToday = categoryBudgetsHistory[category].history.findIndex(h => h.date === date);
             if (existingToday !== -1) {
                 categoryBudgetsHistory[category].history[existingToday].amount = amount;
@@ -1207,7 +1167,6 @@
                 categoryBudgetsHistory[category].history.push({ date: date, amount: amount });
             }
             
-            // Sort history by date
             categoryBudgetsHistory[category].history.sort((a, b) => new Date(a.date) - new Date(b.date));
         }
         
@@ -1238,7 +1197,6 @@
             if (savedCategoryBudgetsHistory) {
                 categoryBudgetsHistory = JSON.parse(savedCategoryBudgetsHistory);
             } else {
-                // Initialize with default budgets for selected categories
                 const today = new Date().toISOString().split('T')[0];
                 categoryBudgetsHistory = {
                     "Fixed Expenses": { history: [{ date: today, amount: 0 }], subcategoryBudgets: {} },
@@ -1369,6 +1327,16 @@
             updateUI();
         }
         
+        // Delete a single transaction
+        function deleteTransaction(id) {
+            if (confirm('Delete this transaction?')) {
+                transactions = transactions.filter(t => t.id !== id);
+                saveData();
+                updateUI();
+                renderRecentTransactions();
+            }
+        }
+        
         // Update Home tab
         function updateHomeTab() {
             const currentMonth = getCurrentMonth();
@@ -1377,7 +1345,7 @@
             document.getElementById('displayBalance').textContent = `$${formatCurrency(getBalanceForMonth(currentMonth))}`;
         }
         
-        // Update home dropdowns (only shows selected categories)
+        // Update home dropdowns
         function updateHomeDropdowns() {
             const categories = Object.keys(selectedCategories).filter(cat => selectedCategories[cat] === true);
             const categorySelect = document.getElementById('categorySelectHome');
@@ -1390,12 +1358,11 @@
                 categorySelect.appendChild(option);
             });
             
-            // Reset to default empty option
             categorySelect.value = "";
             document.getElementById('subcategorySelectHome').innerHTML = '<option value="">Select a sub-category (optional)</option>';
         }
         
-        // Update subcategory dropdown based on selected category
+        // Update subcategory dropdown
         function updateSubcategoryDropdown(category) {
             const subcategories = getSubcategories(category);
             const subSelect = document.getElementById('subcategorySelectHome');
@@ -1407,7 +1374,43 @@
                 subSelect.appendChild(option);
             });
         }
-        // Render predefined categories in modal
+        
+        // Render recent 5 transactions on Home tab
+        function renderRecentTransactions() {
+            const container = document.getElementById('recentTransactionsList');
+            
+            if (!container) return;
+            
+            if (transactions.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 20px;">No transactions yet</p>';
+                return;
+            }
+            
+            const recent = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+            
+            container.innerHTML = '';
+            recent.forEach(transaction => {
+                const isFixedExpense = transaction.category === 'Fixed Expenses';
+                const amountClass = isFixedExpense ? 'positive' : 'negative';
+                const amountSign = isFixedExpense ? '+' : '-';
+                
+                const div = document.createElement('div');
+                div.className = 'recent-item';
+                div.innerHTML = `
+                    <div class="recent-info">
+                        <div class="recent-category">${transaction.category}${transaction.subcategory ? ` / ${transaction.subcategory}` : ''}</div>
+                        <div class="recent-details">
+                            <span>${formatDate(transaction.date)}</span>
+                            ${transaction.description ? `<span>• ${transaction.description.substring(0, 30)}${transaction.description.length > 30 ? '...' : ''}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="recent-amount ${amountClass}">${amountSign}$${formatCurrency(transaction.amount)}</div>
+                    <button class="delete-transaction-btn" onclick="deleteTransaction(${transaction.id})">✕</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+            // Render predefined categories in modal
         function renderPredefinedCategoriesModal() {
             const container = document.getElementById('predefinedCategoriesList');
             const allPredefined = Object.keys(DEFAULT_CATEGORIES).sort();
@@ -1436,7 +1439,6 @@
                 const categoryName = cb.value;
                 if (cb.checked && !selectedCategories[categoryName]) {
                     selectedCategories[categoryName] = true;
-                    // Initialize budget history for new category
                     if (!categoryBudgetsHistory[categoryName]) {
                         categoryBudgetsHistory[categoryName] = { history: [{ date: today, amount: 0 }], subcategoryBudgets: {} };
                     }
@@ -1486,7 +1488,7 @@
             setTimeout(() => openBudgetModal(customName), 100);
         }
         
-        // Render Budget Tab (Cards with Budget and Expense)
+        // Render Budget Tab
         function renderBudgetTab() {
             const categories = Object.keys(selectedCategories).filter(cat => selectedCategories[cat] === true).sort();
             const currentMonth = getCurrentMonth();
@@ -1525,7 +1527,7 @@
             });
         }
         
-        // Open budget modal for a category
+        // Open budget modal
         function openBudgetModal(category) {
             currentEditingCategory = category;
             const currentBudget = getCurrentBudget(category);
@@ -1564,16 +1566,14 @@
             document.getElementById('budgetModal').classList.add('active');
         }
         
-        // Save budget from modal (adds to history)
+        // Save budget from modal
         function saveBudgetFromModal() {
             if (!currentEditingCategory) return;
             
             const categoryBudget = parseFloat(document.getElementById('modalCategoryBudget').value) || 0;
             
-            // Save to history with current date
             saveBudgetToHistory(currentEditingCategory, categoryBudget);
             
-            // Save subcategory budgets
             const subcategories = getSubcategories(currentEditingCategory);
             if (!categoryBudgetsHistory[currentEditingCategory].subcategoryBudgets) {
                 categoryBudgetsHistory[currentEditingCategory].subcategoryBudgets = {};
@@ -1611,10 +1611,12 @@
                 updateHomeDropdowns();
                 updateOverviewCategorySelect();
                 updateUI();
+                renderRecentTransactions();
+                renderSummaryTab();
             }
         }
         
-        // Update Overview category select (only selected categories)
+        // Update Overview category select
         function updateOverviewCategorySelect() {
             const categories = Object.keys(selectedCategories).filter(cat => selectedCategories[cat] === true).sort();
             const categorySelect = document.getElementById('categorySelect');
@@ -1633,7 +1635,7 @@
             }
         }
         
-        // Update Overview tab with Horizontal Bar Graph (using historical budget)
+        // Update Overview tab
         function updateOverviewTab() {
             const selectedMonth = document.getElementById('monthSelect').value || getCurrentMonth();
             const selectedCategory = document.getElementById('categorySelect').value;
@@ -1648,7 +1650,6 @@
             const monthExpenses = getAllExpensesForMonth(selectedMonth);
             const categoryExpenses = monthExpenses.filter(t => t.category === selectedCategory);
             
-            // Group by subcategory
             const groupedBySubcategory = {};
             categoryExpenses.forEach(t => {
                 const sub = t.subcategory || 'Uncategorized';
@@ -1688,7 +1689,6 @@
             
             document.getElementById('selectedCategoryName').textContent = selectedCategory;
             
-            // Get budget based on selected month (historical)
             const categoryBudget = getBudgetForMonth(selectedCategory, selectedMonth);
             const totalExpense = categoryExpenses.reduce((sum, t) => sum + t.amount, 0);
             
@@ -1721,14 +1721,14 @@
                 }
             });
         }
-        // Render Summary Tab (with historical budgets)
+            // Render Summary Tab
         function renderSummaryTab() {
             const selectedMonth = document.getElementById('summaryMonthSelect').value || getCurrentMonth();
             const categories = Object.keys(selectedCategories).filter(cat => selectedCategories[cat] === true && cat !== 'Fixed Expenses').sort();
             const tbody = document.getElementById('summaryTableBody');
             
             if (categories.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px;">No categories selected. Go to Budget tab to add categories. </td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px;">No categories selected. Go to Budget tab to add categories.</td></tr>';
                 return;
             }
             
@@ -1738,7 +1738,6 @@
             
             tbody.innerHTML = '';
             categories.forEach(category => {
-                // Get budget based on selected month (historical)
                 const budget = getBudgetForMonth(category, selectedMonth);
                 const expense = getCategoryExpenseForMonth(category, selectedMonth);
                 const balance = budget - expense;
@@ -1750,14 +1749,13 @@
                 const balanceClass = balance >= 0 ? 'summary-balance-positive' : 'summary-balance-negative';
                 const row = tbody.insertRow();
                 row.innerHTML = `
-                    <td>${category}</td>
+                    <td style="font-weight: 500;">${category}</td>
                     <td class="summary-budget">$${formatCurrency(budget)}</td>
                     <td class="summary-expense">$${formatCurrency(expense)}</td>
                     <td class="${balanceClass}">$${formatCurrency(balance)}</td>
                 `;
             });
             
-            // Add total row
             const totalRow = tbody.insertRow();
             totalRow.style.background = '#f3f4f6';
             totalRow.style.fontWeight = 'bold';
@@ -1769,7 +1767,7 @@
                 <td style="border-top: 2px solid #e5e7eb; font-weight: 700;" class="${totalBalanceClass}">$${formatCurrency(totalBalance)}</td>
             `;
         }
-        // Update UI
+            // Update UI
         function updateUI() {
             updateHomeTab();
             updateHomeDropdowns();
@@ -1784,6 +1782,7 @@
             updateOverviewTab();
             renderBudgetTab();
             renderSummaryTab();
+            renderRecentTransactions();
         }
         
         // Edit monthly budget
@@ -1831,12 +1830,12 @@
             
             addTransaction(amount, category, subcategory, description);
             
-            // Reset form fields
             document.getElementById('amount').value = '';
             document.getElementById('description').value = '';
             document.getElementById('categorySelectHome').value = '';
             document.getElementById('subcategorySelectHome').innerHTML = '<option value="">Select a sub-category (optional)</option>';
             document.getElementById('amount').focus();
+            renderRecentTransactions();
         });
         
         document.getElementById('budgetCard').addEventListener('click', editMonthlyBudget);
@@ -1891,7 +1890,10 @@
                 if (tabName === 'budget') renderBudgetTab();
                 else if (tabName === 'overview') updateOverviewTab();
                 else if (tabName === 'summary') renderSummaryTab();
-                else if (tabName === 'home') updateHomeTab();
+                else if (tabName === 'home') {
+                    updateHomeTab();
+                    renderRecentTransactions();
+                }
             });
         });
         
